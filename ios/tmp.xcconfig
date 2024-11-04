@@ -1,0 +1,3 @@
+BASE_URL=https:/$()/api-prod.com
+ACCESS_KEY=12345Prod
+PRODUCTION=true
