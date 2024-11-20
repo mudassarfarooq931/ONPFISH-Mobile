@@ -1,12 +1,23 @@
-import {View, Text} from 'react-native';
+import store from '@redux/store';
+import Routes from '@routes/routes';
 import React from 'react';
-import Config from 'react-native-config';
+import {Text, View} from 'react-native';
+import {MenuProvider} from 'react-native-popup-menu';
+import {ToastProvider} from 'react-native-toast-notifications';
+import {Provider} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
 
 const App = () => {
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>App {Config?.BASE_URL}</Text>
-    </View>
+    <ToastProvider>
+      <Provider store={store.store}>
+        <PersistGate loading={null} persistor={store.persistor}>
+          <MenuProvider>
+            <Routes />
+          </MenuProvider>
+        </PersistGate>
+      </Provider>
+    </ToastProvider>
   );
 };
 
