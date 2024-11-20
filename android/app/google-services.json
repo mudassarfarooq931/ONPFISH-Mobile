@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "504501088593",
+    "project_id": "onpfish",
+    "storage_bucket": "onpfish.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:504501088593:android:5b9886ff15ed285656e370",
+        "android_client_info": {
+          "package_name": "com.onpfish"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEypsNDel9rjW9nSe6Y-UchmJyMfp1BXg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

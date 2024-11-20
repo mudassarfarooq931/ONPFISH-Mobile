@@ -1,52 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
-	<key>CFBundleDisplayName</key>
-	<string>ONPFISH</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-	  <!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>arm64</string>
-	</array>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-</dict>
+  <dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleDisplayName</key>
+    <string>ONPFISH</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$(MARKETING_VERSION)</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleVersion</key>
+    <string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>LSRequiresIPhoneOS</key>
+    <true />
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <false />
+      <key>NSAllowsLocalNetworking</key>
+      <true />
+    </dict>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>Grant ONPFISH permission to access your media library.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Grant ONPFISH permission to access your camera in order to take photos and send them to other users in conversations. Your photos will not be shared without your consent.</string>
+    <key>NSFaceIDUsageDescription</key>
+    <string>Grant ONPFISH permission to access your FaceID to allows quick and secure access.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string></string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Grant ONPFISH permission to access your microphone in order to record conversation with patient. All conversation recording will not be shared without your consent.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Grant ONPFISH permission to access your photo gallery so they can select and send photos to other users in conversations. Your photos will not be shared without your consent.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Grant ONPFISH permission to access your microphone for speech to text conversion.</string>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>Grant ONPFISH permission to access your media library.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Grant ONPFISH permission to access your camera in order to take photos and send them to other users in conversations. Your photos will not be shared without your consent.</string>
+    <key>UIAppFonts</key>
+    <array>
+      <string>Fontisto.ttf</string>
+      <string>Octicons.ttf</string>
+      <string>Feather.ttf</string>
+      <string>Entypo.ttf</string>
+      <string>FontAwesome5_Brands.ttf</string>
+      <string>MaterialCommunityIcons.ttf</string>
+      <string>AntDesign.ttf</string>
+      <string>Fondation.ttf</string>
+      <string>Ionicons.ttf</string>
+      <string>FontAwesome5_Solid.ttf</string>
+      <string>FontAwesome5_Regular.ttf</string>
+      <string>FontAwesome.ttf</string>
+      <string>Zocial.ttf</string>
+      <string>EvilIcons.ttf</string>
+      <string>SimpleLineIcons.ttf</string>
+      <string>MaterialIcons.ttf</string>
+      <string>Foundation.ttf</string>
+      <string>MMRTextBold.ttf</string>
+      <string>Montserrat-Black.ttf</string>
+      <string>Montserrat-BlackItalic.ttf</string>
+      <string>Montserrat-Bold.ttf</string>
+      <string>Montserrat-BoldItalic.ttf</string>
+      <string>Montserrat-ExtraBold.ttf</string>
+      <string>Montserrat-ExtraBoldItalic.ttf</string>
+      <string>Montserrat-ExtraLight.ttf</string>
+      <string>Montserrat-ExtraLightItalic.ttf</string>
+      <string>Montserrat-Italic.ttf</string>
+      <string>Montserrat-Light.ttf</string>
+      <string>Montserrat-LightItalic.ttf</string>
+      <string>Montserrat-Medium.ttf</string>
+      <string>Montserrat-MediumItalic.ttf</string>
+      <string>Montserrat-Regular.ttf</string>
+      <string>Montserrat-SemiBold.ttf</string>
+      <string>Montserrat-SemiBoldItalic.ttf</string>
+      <string>Montserrat-Thin.ttf</string>
+      <string>Montserrat-ThinItalic.ttf</string>
+      <string>mmrtext.ttf</string>
+      <string>mmrtextb.ttf</string>
+      <string>MMRText.ttf</string>
+      <string>Poppins-Black.ttf</string>
+      <string>Poppins-BlackItalic.ttf</string>
+      <string>Poppins-Bold.ttf</string>
+      <string>Poppins-BoldItalic.ttf</string>
+      <string>Poppins-ExtraBold.ttf</string>
+      <string>Poppins-ExtraBoldItalic.ttf</string>
+      <string>Poppins-ExtraLight.ttf</string>
+      <string>Poppins-ExtraLightItalic.ttf</string>
+      <string>Poppins-Italic.ttf</string>
+      <string>Poppins-Light.ttf</string>
+      <string>Poppins-LightItalic.ttf</string>
+      <string>Poppins-Medium.ttf</string>
+      <string>Poppins-MediumItalic.ttf</string>
+      <string>Poppins-Regular.ttf</string>
+      <string>Poppins-SemiBold.ttf</string>
+      <string>Poppins-SemiBoldItalic.ttf</string>
+      <string>Poppins-Thin.ttf</string>
+      <string>Poppins-ThinItalic.ttf</string>
+    </array>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string />
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+      <string>arm64</string>
+    </array>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+      <string>UIInterfaceOrientationPortrait</string>
+      <string>UIInterfaceOrientationLandscapeLeft</string>
+      <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <false />
+  </dict>
 </plist>
