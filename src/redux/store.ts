@@ -6,11 +6,13 @@ import toastReducer from './slice/toast-slice';
 import authReducer from './slice/auth/auth-slice';
 import fishIdentifyReducer from './slice/main/fish-identify-slice';
 import dashboardReducer from './slice/main/fish-identify-slice';
+import weightDashboardReducer from './slice/main/dashboard-slice';
 
 const rootReducer = combineReducers({
   toast: toastReducer,
   auth: authReducer,
   fish: dashboardReducer,
+  weight: weightDashboardReducer,
 });
 
 const persistConfig = {

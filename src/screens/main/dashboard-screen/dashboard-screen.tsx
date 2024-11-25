@@ -3,7 +3,7 @@ import {colors} from '@constants';
 import database from '@react-native-firebase/database'; // Import Firebase Realtime Database
 import {DrawerActions} from '@react-navigation/native';
 import axios from 'axios';
-import React, {memo, useEffect, useState} from 'react';
+import React, {memo, useEffect, useReducer, useState} from 'react';
 import {
   Alert,
   FlatList,
@@ -15,8 +15,10 @@ import {
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {navigationRef} from '../../../../navigation-helper';
+import {clearWeightData, weightData} from '@redux/slice/main/dashboard-slice';
+import {RootState} from '@redux/store';
 
 interface IProps {}
 
@@ -25,19 +27,20 @@ const DashboardScreen = memo(({}: IProps) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [responseData, setResponseData] = useState<any[]>([]); // State to hold response data
   const dispatch = useDispatch();
+  const {data} = useSelector((state: RootState) => state.weight);
 
   useEffect(() => {
+    fetchFirebaseData();
     return () => {
-      setResponseData([]);
+      dispatch(clearWeightData([]));
     };
   }, []);
 
   const fetchFirebaseData = () => {
     setLoading(true);
     database()
-      .ref('/fishes') // Reference to the "fishes" node
+      .ref('/fishes/identify') // Reference to the "fishes" node
       .once('value')
       .then(snapshot => {
         const data = snapshot.val();
@@ -46,9 +49,9 @@ const DashboardScreen = memo(({}: IProps) => {
             id: key,
             ...data[key],
           }));
-          setResponseData(formattedData);
+          dispatch(weightData(formattedData));
         } else {
-          setResponseData([]);
+          dispatch(clearWeightData([]));
         }
       })
       .catch(err => {
@@ -72,6 +75,53 @@ const DashboardScreen = memo(({}: IProps) => {
       .catch(err => console.error(err));
   };
 
+  const openGalleryWeight = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: false,
+    })
+      .then(image => {
+        setSelectedImage(image.path);
+        setModalVisible(false);
+        uploadImageToWeightAPI(image.path);
+      })
+      .catch(err => console.error(err));
+  };
+
+  const uploadImageToWeightAPI = async (imagePath: string) => {
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append('file', {
+        uri: imagePath,
+        name: 'image.jpg',
+        type: 'image/jpeg',
+      });
+
+      const response = await axios.post(
+        'https://7727771d44d4.ngrok.app/weight/',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      const data = response.data;
+      console.log('Responsee======>', JSON.stringify(data, null, 2));
+      const formattedData = Object.values(data);
+
+      saveToFirebaseWeight(formattedData);
+    } catch (error) {
+      console.error('API Error:', error);
+      Alert.alert('Error', 'Failed to upload image.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const openGallery = () => {
     ImagePicker.openPicker({
       width: 300,
@@ -85,7 +135,6 @@ const DashboardScreen = memo(({}: IProps) => {
       })
       .catch(err => console.error(err));
   };
-
   const uploadImageToAPI = async (imagePath: string) => {
     try {
       setLoading(true);
@@ -112,7 +161,7 @@ const DashboardScreen = memo(({}: IProps) => {
         .filter(key => key !== 'total_fishes')
         .map(key => ({id: key, name: data[key].Name}));
 
-      setResponseData(formattedData);
+      dispatch(weightData(formattedData));
       saveToFirebase(formattedData);
     } catch (error) {
       console.error('API Error:', error);
@@ -122,9 +171,22 @@ const DashboardScreen = memo(({}: IProps) => {
     }
   };
 
+  const saveToFirebaseWeight = (data: any[]) => {
+    database()
+      .ref(`/fishes`)
+      .set({weight: data})
+      .then(() => {
+        Alert.alert('Success', 'Data saved to Firebase!');
+      })
+      .catch(err => {
+        console.error('Firebase Save Error:', err);
+        Alert.alert('Error', 'Failed to save data to Firebase.');
+      });
+  };
+
   const saveToFirebase = (data: any[]) => {
     database()
-      .ref('/fishes')
+      .ref(`/fishes/identify`)
       .set(data.reduce((acc, item) => ({...acc, [item.id]: item}), {}))
       .then(() => {
         Alert.alert('Success', 'Data saved to Firebase!');
@@ -160,8 +222,8 @@ const DashboardScreen = memo(({}: IProps) => {
 
         <FlatList
           showsVerticalScrollIndicator={false}
-          data={responseData.filter(item =>
-            item.name.toLowerCase().includes(searchText.toLowerCase()),
+          data={data?.filter((item: any) =>
+            item?.name?.toLowerCase().includes(searchText?.toLowerCase()),
           )}
           renderItem={renderItem}
           keyExtractor={item => item.id}
