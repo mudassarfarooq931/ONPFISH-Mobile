@@ -1,7 +1,6 @@
 import store from '@redux/store';
 import Routes from '@routes/routes';
 import React from 'react';
-import {Text, View} from 'react-native';
 import {MenuProvider} from 'react-native-popup-menu';
 import {ToastProvider} from 'react-native-toast-notifications';
 import {Provider} from 'react-redux';

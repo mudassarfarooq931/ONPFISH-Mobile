@@ -19,7 +19,7 @@ export const handleLogin = createAsyncThunk<LoginResponse, LoginPayload>(
         payload?.email,
         payload?.password,
       );
-      console.log('User Loged In!', response);
+
       const userSnapshot = await database()
         .ref(`users/${response.user.uid}`)
         .once('value');

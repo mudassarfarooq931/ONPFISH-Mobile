@@ -10,7 +10,6 @@ import AuthNav from './auth/auth.routes';
 import MainDrawerNav from './main/drawer-nav.routes';
 
 interface IProps {
-  message: string;
   isLogined: string;
 }
 

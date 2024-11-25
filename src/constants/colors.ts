@@ -1,6 +1,7 @@
 // export const primary = '#E5A00F';
 // export const primary = '#169DD9';
 export const primary = '#3575AC';
+// export const primary = '#308AFF';
 export const primaryLight = '#cabefa';
 export const primaryDark = '#0065cb';
 export const primaryDarker = '#004FA0';
