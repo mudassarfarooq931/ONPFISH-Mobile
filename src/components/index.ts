@@ -8,6 +8,7 @@ import Drawer from './drawer/drawer';
 import {CustomDropDown} from './custom-drop-down/custom-drop-down';
 import PrimaryHeader from './primary-header';
 import CustomInput from './custom-input';
+import CustomHeader from './custom-header';
 export {
   ToastView,
   ProgressDialog,
@@ -19,4 +20,5 @@ export {
   CustomDropDown,
   PrimaryHeader,
   CustomInput,
+  CustomHeader,
 };

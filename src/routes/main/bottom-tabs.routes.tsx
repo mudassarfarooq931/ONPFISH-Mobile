@@ -39,7 +39,7 @@ const BottomTabNav: React.FC<IProps> = () => {
   ];
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Dashboard"
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.primary,

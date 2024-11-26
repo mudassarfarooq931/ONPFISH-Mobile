@@ -5,4 +5,5 @@ export enum ScreenEnum {
   Profile = 'Profile',
   Dashboard = 'Dashboard',
   Home = 'Home',
+  FishDetails = 'FishDetails',
 }

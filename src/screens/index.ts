@@ -4,6 +4,8 @@ import LoginScreen from './auth/login-screen/login-screen';
 import SignupScreen from './auth/signup-screen/signup-screen';
 import HomeScreen from './main/home-screen/home-screen';
 import DashboardScreen from './main/dashboard-screen/dashboard-screen';
+import FishDetailsScreen from './main/fish-details-screen/fish-details-screen';
+import WelcomeScreen from './auth/welcome-screen/welcome-screen';
 export {
   ChangePasswordScreen,
   LoginScreen,
@@ -11,4 +13,6 @@ export {
   SignupScreen,
   HomeScreen,
   DashboardScreen,
+  FishDetailsScreen,
+  WelcomeScreen,
 };

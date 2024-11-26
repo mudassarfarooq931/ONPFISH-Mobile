@@ -6,6 +6,7 @@ export type AuthNavParamList = {
   Login: undefined;
   ChangePassword: undefined;
   Signup: undefined;
+  Welcome: undefined;
 };
 
 export type AuthRouteProp<T extends keyof AuthNavParamList> = RouteProp<
@@ -27,6 +28,7 @@ export type PhysicianNavParamList = {
 //------------------------------
 export type MainNavParamList = {
   BottomTabNav: undefined;
+  FishDetails: undefined;
 };
 
 export type PhysicianRouteProp<T extends keyof PhysicianNavParamList> =
