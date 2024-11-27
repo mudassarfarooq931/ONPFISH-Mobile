@@ -15,7 +15,11 @@ import {ProgressDialog} from '@components';
 import {colors, ScreenEnum} from '@constants';
 import database from '@react-native-firebase/database';
 import {DrawerActions} from '@react-navigation/native';
-import {clearWeightData, weightData} from '@redux/slice/main/dashboard-slice';
+import {
+  clearWeightData,
+  nameData,
+  weightData,
+} from '@redux/slice/main/dashboard-slice';
 import {RootState} from '@redux/store';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -29,13 +33,14 @@ interface IProps {
 const mapStateToProps = (state: RootState) => {
   return {
     userData: state.auth.userData,
+    data: state.weight.data,
   };
 };
 
 const staticData = [
   {id: 1, title: 'Identify', icon: 'fish', screen: 'IdentifyScreen'},
   {id: 2, title: 'Search', icon: 'magnify', screen: 'SearchScreen'},
-  {id: 3, title: 'Catch Log', icon: 'calendar', screen: 'CatchLogScreen'},
+  {id: 3, title: 'Weight', icon: 'calendar', screen: 'CatchLogScreen'},
   {id: 4, title: 'Weather', icon: 'weather-sunny', screen: 'WeatherScreen'},
   {id: 5, title: 'Location', icon: 'map-marker', screen: 'LocationScreen'},
   {
@@ -53,8 +58,15 @@ const DashboardScreen = memo(({userData}: IProps) => {
     <TouchableOpacity
       style={styles.card}
       onPress={() => {
-        if (item?.title.toLowerCase() === 'identify') {
+        console.log('helloo');
+        if (item?.title === 'Identify') {
           setModalVisible(true);
+        } else if (item?.title === 'Search') {
+          console.log('..hit...');
+          navigate(ScreenEnum?.Search);
+        } else if (item?.title === 'Weight') {
+          setModal(true);
+          console.log('..hit...');
         }
       }}>
       <Icon name={item.icon} size={40} color={colors.primary} />
@@ -63,13 +75,14 @@ const DashboardScreen = memo(({userData}: IProps) => {
   );
   const [searchText, setSearchText] = useState<string>('');
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage1, setSelectedImage1] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const {data} = useSelector((state: RootState) => state.weight);
 
   useEffect(() => {
-    fetchReduxData();
     return () => {
       dispatch(clearWeightData([]));
     };
@@ -77,47 +90,139 @@ const DashboardScreen = memo(({userData}: IProps) => {
 
   const fetchReduxData = () => {
     database()
-      .ref('/fishes/identify')
+      .ref(`/fishes/identify/${userData.uid}`)
       .once('value')
       .then(snapshot => {
         const firebaseData = snapshot.val();
-        if (firebaseData) {
-          const formattedData = Object.keys(firebaseData).map(key => ({
-            id: key,
-            ...firebaseData[key],
-          }));
-          dispatch(weightData(formattedData));
-        } else {
-          dispatch(clearWeightData([]));
-        }
-      })
-      .catch(err => {
-        console.error('Firebase Fetch Error:', err);
-        Alert.alert('Error', 'Failed to fetch data from Firebase.');
-      })
-      .finally(() => setLoading(false));
+        console.log(firebaseData, 'firebaseData');
+
+        const sortedKeys = Object.keys(firebaseData).sort(
+          (a, b) =>
+            (firebaseData[b].timestamp || 0) - (firebaseData[a].timestamp || 0),
+        );
+        console.log(sortedKeys, 'sortedKeys');
+
+        const recentId: any = sortedKeys.shift();
+        console.log(recentId, 'recentId');
+
+        const recentData = firebaseData[recentId];
+
+        console.log(recentData, 'recentData');
+        const listData = recentData.names.map(
+          (name: string, index: string) => ({
+            id: index.toString(),
+            name,
+          }),
+        );
+        console.log(listData, 'listData');
+
+        const names = Object.values(firebaseData)
+          .filter((item: any) => item.names && Array.isArray(item.names))
+          .flatMap((item: any) => item.names);
+
+        console.log('names', names);
+        dispatch(nameData(listData));
+
+        //   if (firebaseData) {
+        //     const formattedData = Object.keys(firebaseData).map(key => ({
+        //       id: key,
+        //       ...firebaseData[key],
+        //     }));
+        //     console.log(formattedData, 'formattedData');
+
+        //     dispatch(weightData(formattedData));
+        //   } else {
+        //     dispatch(clearWeightData([]));
+        //   }
+        // })
+        // .catch(err => {
+        //   console.error('Firebase Fetch Error:', err);
+        //   Alert.alert('Error', 'Failed to fetch data from Firebase.');
+        // })
+        // .finally(() => setLoading(false)
+      });
   };
 
   const handleImageSelection = async (imagePath: string) => {
     try {
       setLoading(true);
       const identifyResponse = await uploadImageToAPI(imagePath);
-      const weightResponse = await uploadImageToWeightAPI(imagePath);
+      // const weightResponse = await uploadImageToWeightAPI(imagePath);
+      console.log(identifyResponse, 'identifyResponse');
+      if (
+        identifyResponse.success
 
-      if (identifyResponse.success && weightResponse.success) {
-        const formattedData = identifyResponse.data.map(fish => ({
-          ...fish,
-          estimatedWeight: weightResponse.data.estimated_crate_weight, // Attach weight to each item
-        }));
+        // && weightResponse.success
+      ) {
+        const formattedData = identifyResponse.data.map(
+          fish => fish.name,
+          //   ({
+          //     // ...fish,
+          //     // estimatedWeight: weightResponse.data.estimated_crate_weight, // Attach weight to each item
+          //   }),
+        );
 
-        saveToFirebase(formattedData, weightResponse.data);
-        dispatch(weightData(formattedData));
+        // const names = data.map(item => item.name);
+        console.log(formattedData, 'formattedData');
+
+        saveToFirebase(
+          formattedData,
+          //  /  weightResponse.data
+        );
+        fetchReduxData();
+
+        // dispatch(weightData(formattedData));
       }
     } catch (error) {
       console.error('Image Handling Error:', error);
     } finally {
       setLoading(false);
     }
+  };
+  const handleImageSelection1 = async (imagePath: string) => {
+    try {
+      setLoading(true);
+      const weightResponse = await uploadImageToWeightAPI(imagePath);
+      console.log('weightResponse', weightResponse);
+
+      if (
+        weightResponse.success
+
+        // && weightResponse.success
+      ) {
+        const formattedData = weightResponse.data;
+
+        console.log(formattedData, 'formattedData');
+
+        saveToFirebaseWeight(formattedData);
+        fetchReduxDataWeight();
+      }
+    } catch (error) {
+      console.error('Image Handling Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchReduxDataWeight = () => {
+    database()
+      .ref(`/fishes/weight/${userData.uid}`)
+      .once('value')
+      .then(snapshot => {
+        const firebaseData = snapshot.val();
+        console.log(firebaseData, 'firebaseData');
+
+        const sortedKeys = Object.keys(firebaseData).sort(
+          (a, b) =>
+            (firebaseData[b].timestamp || 0) - (firebaseData[a].timestamp || 0),
+        );
+        console.log(sortedKeys, 'sortedKeys');
+
+        const recentId: any = sortedKeys.shift();
+        const recentData = firebaseData[recentId].weightData;
+        console.log(recentData, 'recentData');
+        console.log(recentId, 'recentId');
+        dispatch(weightData(recentData));
+      });
   };
 
   const openCamera = () => {
@@ -129,6 +234,7 @@ const DashboardScreen = memo(({userData}: IProps) => {
       .then(image => {
         setSelectedImage(image.path);
         setModalVisible(false);
+
         handleImageSelection(image.path);
       })
       .catch(err => console.error(err));
@@ -142,12 +248,66 @@ const DashboardScreen = memo(({userData}: IProps) => {
     })
       .then(image => {
         setSelectedImage(image.path);
-        setModalVisible(false);
+        setModal(false);
         handleImageSelection(image.path);
       })
       .catch(err => console.error(err));
   };
 
+  const openCamera1 = () => {
+    ImagePicker.openCamera({
+      width: 300,
+      height: 400,
+      cropping: true,
+    })
+      .then(image => {
+        setSelectedImage1(image.path);
+        setModal(false);
+        handleImageSelection1(image.path);
+      })
+      .catch(err => console.error(err));
+  };
+
+  const openGallery1 = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    })
+      .then(image => {
+        setSelectedImage1(image.path);
+        setModal(false);
+        handleImageSelection1(image.path);
+      })
+      .catch(err => console.error(err));
+  };
+
+  const uploadImageToWeightAPI = async (imagePath: string) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', {
+        uri: imagePath,
+        name: 'image.jpg',
+        type: 'image/jpeg',
+      });
+
+      const response = await axios.post(
+        'https://7727771d44d4.ngrok.app/weight/',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      return {success: true, data: response.data};
+    } catch (error) {
+      console.error('Weight API Error:', error);
+      Alert.alert('Error', 'Failed to upload image to Weight API.');
+      return {success: false, data: []};
+    }
+  };
   const uploadImageToAPI = async (imagePath: string) => {
     try {
       const formData = new FormData();
@@ -180,38 +340,41 @@ const DashboardScreen = memo(({userData}: IProps) => {
     }
   };
 
-  const uploadImageToWeightAPI = async (imagePath: string) => {
-    try {
-      const formData = new FormData();
-      formData.append('file', {
-        uri: imagePath,
-        name: 'image.jpg',
-        type: 'image/jpeg',
-      });
-
-      const response = await axios.post(
-        'https://7727771d44d4.ngrok.app/weight/',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        },
-      );
-
-      return {success: true, data: response.data};
-    } catch (error) {
-      console.error('Weight API Error:', error);
-      Alert.alert('Error', 'Failed to upload image to Weight API.');
-      return {success: false, data: []};
-    }
-  };
-
-  const saveToFirebase = (identifyData: any[], weightData: any) => {
-    const data = {identify: identifyData, weight: weightData};
+  const saveToFirebase = (identifyData: any[]) => {
+    // const data = {identifyData};
     database()
-      .ref(`/fishes`)
-      .set(data)
+      .ref(`/fishes/identify/${userData.uid}`)
+      .push()
+      .set({names: identifyData, timestamp: Date.now()})
+      .then(() =>
+        Alert.alert(
+          'Alert',
+          'Success',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                console.log('Alert button pressed');
+                // Add your action here, e.g., navigate to another screen:
+                navigate(ScreenEnum?.Home); // Replace 'Home' with your desired screen
+              },
+            },
+          ],
+          {cancelable: false}, // Prevent dismissing the alert by tapping outside
+        ),
+      )
+
+      .catch(err => {
+        console.error('Firebase Save Error:', err);
+        Alert.alert('Error', 'Failed to save data to Firebase.');
+      });
+  };
+  const saveToFirebaseWeight = (weightData: any) => {
+    // const data = {weight: weightData};
+    database()
+      .ref(`/fishes/weight/${userData.uid}`)
+      .push()
+      .set({weightData, timestamp: Date.now()})
       .then(() =>
         Alert.alert(
           'Alert',
@@ -303,6 +466,32 @@ const DashboardScreen = memo(({userData}: IProps) => {
         contentContainerStyle={styles.grid}
         showsVerticalScrollIndicator={false}
       />
+      {modal && (
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={modal}
+          onRequestClose={() => setModal(false)}>
+          <TouchableOpacity
+            style={styles.modalContainer}
+            onPress={() => setModal(false)}>
+            <View style={styles.modalContent}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={openCamera1}>
+                <Icon name="camera" size={24} color={colors.primary} />
+                <Text style={styles.modalButtonText}>Camera</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={openGallery1}>
+                <Icon name="image" size={24} color={colors.primary} />
+                <Text style={styles.modalButtonText}>Gallery</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
 
       {modalVisible && (
         <Modal

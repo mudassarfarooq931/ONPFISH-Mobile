@@ -6,4 +6,5 @@ export enum ScreenEnum {
   Dashboard = 'Dashboard',
   Home = 'Home',
   FishDetails = 'FishDetails',
+  Search = 'Search',
 }

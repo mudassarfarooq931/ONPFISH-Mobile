@@ -4,7 +4,7 @@ import {colors} from '@constants';
 import {CustomHeader} from '@components';
 
 const FishDetailsScreen = ({route}: any) => {
-  const {item} = route?.params;
+  // const {item} = route?.params;
 
   return (
     <>
@@ -22,7 +22,7 @@ const FishDetailsScreen = ({route}: any) => {
             shadowRadius: 2.62,
             elevation: 2,
           }}>
-          <Image source={{uri: item.image}} style={styles.image} />
+          {/* <Image source={{uri: item.image}} style={styles.image} /> */}
 
           {/* Details Section */}
           <View style={styles.detailsContainer}>
@@ -31,20 +31,20 @@ const FishDetailsScreen = ({route}: any) => {
             {/* Display name and value in one line */}
             <View style={styles.detailRow}>
               <Text style={styles.detailName}>ID:</Text>
-              <Text style={styles.detailValue}>{item?.id}</Text>
+              {/* <Text style={styles.detailValue}>{item?.id}</Text> */}
             </View>
             <View style={styles.detailRow}>
               <Text style={styles.detailName}>Name:</Text>
-              <Text style={styles.detailValue}>{item?.name}</Text>
+              {/* <Text style={styles.detailValue}>{item?.name}</Text> */}
             </View>
-            {item?.estimatedWeight && (
+            {/* {item?.estimatedWeight && (
               <View style={styles.detailRow}>
                 <Text style={styles.detailName}>Estimated Weight:</Text>
                 <Text style={styles.detailValue}>
                   {item?.estimatedWeight} kg
                 </Text>
               </View>
-            )}
+            )} */}
           </View>
         </View>
       </ScrollView>

@@ -8,56 +8,71 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {connect, useSelector} from 'react-redux';
 import {navigationRef} from '../../../../navigation-helper';
 import {navigate} from '../../../../root-navigation';
+import {weightData} from '@redux/slice/main/dashboard-slice';
+
+interface FishData {
+  id: string;
+  name: string;
+}
+interface weightdata {
+  weightdata: any;
+}
 
 interface IProps {
   userData: any;
+  data: FishData[];
+  weightdata: any;
 }
 
 const mapStateToProps = (state: RootState) => {
   return {
     userData: state.auth.userData,
+    data: state.weight.data,
+    weightdata: state.weight.weightdata,
   };
 };
 
-const HomeScreen = memo(({}: IProps) => {
+const HomeScreen = memo(({data, weightdata}: IProps) => {
   const [searchText, setSearchText] = useState<string>('');
-  const {data} = useSelector((state: RootState) => state.weight);
 
-  const renderItem = ({
-    item,
-  }: {
-    item: {id: string; name: string; estimatedWeight?: number};
-  }) => (
-    <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => navigate(ScreenEnum?.FishDetails, {item})}>
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginRight: 10,
-        }}>
-        <Icon name="fish" color={colors.primary} size={40} />
-      </View>
-      <View style={{flex: 1}}>
-        <Text style={styles.itemText}>ID: {item.id}</Text>
-        <Text style={styles.itemText}>Name: {item.name}</Text>
-        {item.estimatedWeight && (
-          <Text style={styles.itemText}>
-            Estimated Weight: {item.estimatedWeight} kg
-          </Text>
-        )}
-      </View>
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginRight: 10,
-        }}>
-        <Icon name="arrow-forward" color={colors.primary} size={30} />
-      </View>
-    </TouchableOpacity>
-  );
+  console.log(data, 'usama');
+  console.log(weightdata, 'weightdata');
+  const renderItem = ({item}: {item: any}) => {
+    const fishWeight = weightdata.estimated_crate_weight;
+    console.log(fishWeight, 'fishWeight');
+    console.log(item, 'item');
+    return (
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={() => navigate(ScreenEnum?.FishDetails, {item})}>
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: 10,
+          }}>
+          <Icon name="fish" color={colors.primary} size={40} />
+        </View>
+        <View style={{flex: 1}}>
+          <Text style={styles.itemText}>ID: {item.id}</Text>
+          <Text style={styles.itemText}>Name: {item.name}</Text>
+          {weightdata.estimatedWeight && (
+            <Text style={styles.itemText}>
+              Estimated Weight: {weightdata.estimated_crate_weight} kg
+            </Text>
+          )}
+        </View>
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: 10,
+          }}>
+          <Icon name="arrow-forward" color={colors.primary} size={30} />
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   const openDrawer = () => {
     navigationRef.current.dispatch(DrawerActions.openDrawer());
@@ -73,9 +88,11 @@ const HomeScreen = memo(({}: IProps) => {
       />
 
       <FlatList
-        data={data.filter((item: any) =>
-          item.name.toLowerCase().includes(searchText.toLowerCase()),
-        )}
+        // data={data.filter(
+        //   (item: any) => {},
+        //   //item.name.toLowerCase().includes(searchText.toLowerCase()),
+        // )}
+        data={data}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}

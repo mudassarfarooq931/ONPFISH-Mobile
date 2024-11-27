@@ -29,6 +29,7 @@ export type PhysicianNavParamList = {
 export type MainNavParamList = {
   BottomTabNav: undefined;
   FishDetails: undefined;
+  Search: undefined;
 };
 
 export type PhysicianRouteProp<T extends keyof PhysicianNavParamList> =
