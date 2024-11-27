@@ -8,19 +8,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {connect, useDispatch, useSelector} from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
+import {connect, useDispatch, useSelector} from 'react-redux';
 // import Icon from 'react-native-vector-icons/Ionicons';
-import database from '@react-native-firebase/database';
-import axios from 'axios';
-import {DrawerActions} from '@react-navigation/native';
-import {navigationRef} from '../../../../navigation-helper';
-import {CustomInput, PrimaryHeader, ProgressDialog} from '@components';
+import {ProgressDialog} from '@components';
 import {colors, ScreenEnum} from '@constants';
+import database from '@react-native-firebase/database';
+import {DrawerActions} from '@react-navigation/native';
 import {clearWeightData, weightData} from '@redux/slice/main/dashboard-slice';
 import {RootState} from '@redux/store';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {navigationRef} from '../../../../navigation-helper';
 
 import {navigate} from '../../../../root-navigation';
 interface IProps {
@@ -46,7 +45,6 @@ const staticData = [
     screen: 'LicenseScreen',
   },
   {id: 7, title: 'Blog', icon: 'chat', screen: 'BlogScreen'},
-  {id: 8, title: 'Start Trip', icon: 'map', screen: 'StartTripScreen'},
   {id: 9, title: 'Get Help', icon: 'help-circle', screen: 'HelpScreen'},
   {id: 10, title: 'More', icon: 'dots-horizontal', screen: 'MoreScreen'},
 ];

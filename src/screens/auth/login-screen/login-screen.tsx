@@ -5,6 +5,7 @@ import {AppDispatch, RootState} from '@redux/store';
 import React, {useEffect, useState} from 'react';
 import {
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -59,6 +60,8 @@ const LoginScreen = ({loading}: IProps) => {
         style={styles.scroll}
         contentContainerStyle={styles.contentContainer}
         keyboardShouldPersistTaps="handled">
+        <Image source={require('@images/app-logo.png')} style={styles.logo} />
+
         <Text style={styles.title}>Login</Text>
 
         <Text style={styles.label}>Email</Text>

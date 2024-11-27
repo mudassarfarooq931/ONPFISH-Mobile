@@ -23,6 +23,15 @@ export const styles = StyleSheet.create({
     fontFamily: fonts.MONTSERRAT_BOLD,
     color: colors.black,
   },
+  logo: {
+    height: 200,
+    width: 200,
+    resizeMode: 'cover',
+    marginBottom: 20,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
   label: {
     fontSize: 16,
     marginBottom: 5,
