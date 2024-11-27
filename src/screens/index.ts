@@ -6,6 +6,7 @@ import HomeScreen from './main/home-screen/home-screen';
 import DashboardScreen from './main/dashboard-screen/dashboard-screen';
 import FishDetailsScreen from './main/fish-details-screen/fish-details-screen';
 import WelcomeScreen from './auth/welcome-screen/welcome-screen';
+import SearchScreen from './main/search-screen/search-screen';
 export {
   ChangePasswordScreen,
   LoginScreen,
@@ -15,4 +16,5 @@ export {
   DashboardScreen,
   FishDetailsScreen,
   WelcomeScreen,
+  SearchScreen,
 };

@@ -3,12 +3,14 @@ import database from '@react-native-firebase/database';
 
 interface WeightDashboardState {
   data: Array<{id: string; name: string}>;
+  weightdata: any;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: WeightDashboardState = {
   data: [],
+  weightdata: [],
   loading: false,
   error: null,
 };
@@ -17,8 +19,11 @@ const weightDashboardSlice = createSlice({
   name: 'weightDashboard',
   initialState,
   reducers: {
-    weightData: (state, action) => {
+    nameData: (state, action) => {
       state.data = action.payload;
+    },
+    weightData: (state, action) => {
+      state.weightdata = action.payload;
     },
     clearWeightData: (state, action) => {
       state.data = [];
@@ -27,5 +32,6 @@ const weightDashboardSlice = createSlice({
 });
 
 const weightDashboardReducer = weightDashboardSlice.reducer;
-export const {weightData, clearWeightData} = weightDashboardSlice.actions;
+export const {nameData, clearWeightData, weightData} =
+  weightDashboardSlice.actions;
 export default weightDashboardReducer;
