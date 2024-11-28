@@ -46,7 +46,11 @@ const ProfileScreen = memo(({userData}: IProps) => {
 
   return (
     <>
-      <PrimaryHeader onPress={openDrawer} title="Profile" />
+      <PrimaryHeader
+        onPress={openDrawer}
+        title="Profile"
+        style={{paddingRight: 30}}
+      />
       <View style={styles.container}>
         {/* Profile Image */}
         <View style={styles.imageContainer}>

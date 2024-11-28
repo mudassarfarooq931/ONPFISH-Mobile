@@ -1,6 +1,6 @@
 import {CustomInput, PrimaryHeader} from '@components';
 import {colors, ScreenEnum} from '@constants';
-import {DrawerActions} from '@react-navigation/native';
+import {DrawerActions, useRoute} from '@react-navigation/native';
 import {RootState} from '@redux/store';
 import React, {memo, useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
@@ -34,17 +34,26 @@ const mapStateToProps = (state: RootState) => {
 
 const HomeScreen = memo(({data, weightdata}: IProps) => {
   const [searchText, setSearchText] = useState<string>('');
+  const route = useRoute();
 
   console.log(data, 'usama');
   console.log(weightdata, 'weightdata');
+
   const renderItem = ({item}: {item: any}) => {
-    const fishWeight = weightdata.estimated_crate_weight;
-    console.log(fishWeight, 'fishWeight');
-    console.log(item, 'item');
+    return <ItemView item={item} isIdentity={true}></ItemView>;
+  };
+
+  const ItemView = ({item, isIdentity}: {item: any; isIdentity: boolean}) => {
+    console.log('item ', item);
     return (
       <TouchableOpacity
         style={styles.itemContainer}
-        onPress={() => navigate(ScreenEnum?.FishDetails, {item})}>
+        onPress={() =>
+          navigate(ScreenEnum?.FishDetails, {
+            item,
+            weightdata,
+          })
+        }>
         <View
           style={{
             justifyContent: 'center',
@@ -54,13 +63,8 @@ const HomeScreen = memo(({data, weightdata}: IProps) => {
           <Icon name="fish" color={colors.primary} size={40} />
         </View>
         <View style={{flex: 1}}>
-          <Text style={styles.itemText}>ID: {item.id}</Text>
-          <Text style={styles.itemText}>Name: {item.name}</Text>
-          {weightdata.estimatedWeight && (
-            <Text style={styles.itemText}>
-              Estimated Weight: {weightdata.estimated_crate_weight} kg
-            </Text>
-          )}
+          {isIdentity && <IdentityView item={item} />}
+          {!isIdentity && <WeightView />}
         </View>
         <View
           style={{
@@ -74,29 +78,57 @@ const HomeScreen = memo(({data, weightdata}: IProps) => {
     );
   };
 
+  const WeightView = () => {
+    return (
+      <View style={{flex: 1}}>
+        <Text style={styles.itemText}>
+          Estimated Weight: {weightdata.estimated_crate_weight} kg
+        </Text>
+      </View>
+    );
+  };
+  const IdentityView = ({item}: any) => {
+    return (
+      <View style={{flex: 1}}>
+        <>
+          <Text style={styles.itemText}>ID: {item.id}</Text>
+          <Text style={styles.itemText}>Name: {item.name}</Text>
+        </>
+      </View>
+    );
+  };
+
   const openDrawer = () => {
     navigationRef.current.dispatch(DrawerActions.openDrawer());
   };
 
   return (
     <View style={styles.container}>
-      <PrimaryHeader title="Dashboard" onPress={openDrawer} />
+      <PrimaryHeader
+        title="Home"
+        onPress={openDrawer}
+        style={{paddingRight: 40}}
+      />
       <CustomInput
         placeholder="Search items here"
         value={searchText}
         onChangeText={setSearchText}
       />
-
-      <FlatList
-        // data={data.filter(
-        //   (item: any) => {},
-        //   //item.name.toLowerCase().includes(searchText.toLowerCase()),
-        // )}
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContent}
-      />
+      {typeof route.params == 'string' && route.params == 'identity' && (
+        <FlatList
+          // data={data.filter(
+          //   (item: any) => {},
+          //   //item.name.toLowerCase().includes(searchText.toLowerCase()),
+          // )}
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.listContent}
+        />
+      )}
+      {typeof route.params == 'string' && route.params == 'weight' && (
+        <ItemView item={null} isIdentity={false} />
+      )}
     </View>
   );
 });

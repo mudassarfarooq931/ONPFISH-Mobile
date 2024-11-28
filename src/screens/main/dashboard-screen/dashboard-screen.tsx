@@ -11,13 +11,15 @@ import {
 import ImagePicker from 'react-native-image-crop-picker';
 import {connect, useDispatch, useSelector} from 'react-redux';
 // import Icon from 'react-native-vector-icons/Ionicons';
-import {ProgressDialog} from '@components';
+import {PrimaryHeader, ProgressDialog} from '@components';
 import {colors, ScreenEnum} from '@constants';
 import database from '@react-native-firebase/database';
 import {DrawerActions} from '@react-navigation/native';
 import {
   clearWeightData,
   nameData,
+  totalDataWeight,
+  totalDataIdentity,
   weightData,
 } from '@redux/slice/main/dashboard-slice';
 import {RootState} from '@redux/store';
@@ -123,18 +125,15 @@ const DashboardScreen = memo(({userData}: IProps) => {
         console.log('names', names);
         dispatch(nameData(listData));
 
-        //   if (firebaseData) {
-        //     const formattedData = Object.keys(firebaseData).map(key => ({
-        //       id: key,
-        //       ...firebaseData[key],
-        //     }));
-        //     console.log(formattedData, 'formattedData');
+        if (firebaseData) {
+          const alldata = Object.keys(firebaseData).map(key => ({
+            id: key,
+            ...firebaseData[key],
+          }));
+          console.log(alldata, 'alldata');
+          dispatch(totalDataIdentity(alldata));
+        }
 
-        //     dispatch(weightData(formattedData));
-        //   } else {
-        //     dispatch(clearWeightData([]));
-        //   }
-        // })
         // .catch(err => {
         //   console.error('Firebase Fetch Error:', err);
         //   Alert.alert('Error', 'Failed to fetch data from Firebase.');
@@ -222,6 +221,7 @@ const DashboardScreen = memo(({userData}: IProps) => {
         console.log(recentData, 'recentData');
         console.log(recentId, 'recentId');
         dispatch(weightData(recentData));
+        dispatch(totalDataWeight(firebaseData));
       });
   };
 
@@ -356,7 +356,7 @@ const DashboardScreen = memo(({userData}: IProps) => {
               onPress: () => {
                 console.log('Alert button pressed');
                 // Add your action here, e.g., navigate to another screen:
-                navigate(ScreenEnum?.Home); // Replace 'Home' with your desired screen
+                navigate(ScreenEnum?.Home, 'identity'); // Replace 'Home' with your desired screen
               },
             },
           ],
@@ -385,7 +385,7 @@ const DashboardScreen = memo(({userData}: IProps) => {
               onPress: () => {
                 console.log('Alert button pressed');
                 // Add your action here, e.g., navigate to another screen:
-                navigate(ScreenEnum?.Home); // Replace 'Home' with your desired screen
+                navigate(ScreenEnum?.Home, 'weight'); // Replace 'Home' with your desired screen
               },
             },
           ],
@@ -442,20 +442,24 @@ const DashboardScreen = memo(({userData}: IProps) => {
   return (
     <View style={{flex: 1}}>
       {loading && <ProgressDialog visible={loading} />}
-      {/* <PrimaryHeader title="Dashboard" onPress={openDrawer} /> */}
+      <PrimaryHeader
+        title="Dashboard"
+        onPress={openDrawer}
+        style={{paddingRight: 40}}
+      />
 
       {/* Header */}
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <View style={styles.profile}>
           <View style={styles.profileIcon}>
-            {/* <Text style={styles.profileText}>M</Text> */}
+            <Text style={styles.profileText}>M</Text>
           </View>
           <View>
             <Text style={styles.welcomeText}>Welcome</Text>
             <Text style={styles.emailText}>{userData?.email}</Text>
           </View>
         </View>
-      </View>
+      </View> */}
 
       {/* Grid Layout */}
       <FlatList
