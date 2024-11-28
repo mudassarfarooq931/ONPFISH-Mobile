@@ -4,7 +4,7 @@ import {colors} from '@constants';
 import {CustomHeader} from '@components';
 
 const FishDetailsScreen = ({route}: any) => {
-  // const {item} = route?.params;
+  const {item, weightdata} = route?.params;
 
   return (
     <>
@@ -29,22 +29,31 @@ const FishDetailsScreen = ({route}: any) => {
             {/* <Text style={styles.titleText}>Fish Details</Text> */}
 
             {/* Display name and value in one line */}
-            <View style={styles.detailRow}>
-              <Text style={styles.detailName}>ID:</Text>
-              {/* <Text style={styles.detailValue}>{item?.id}</Text> */}
-            </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailName}>Name:</Text>
-              {/* <Text style={styles.detailValue}>{item?.name}</Text> */}
-            </View>
-            {/* {item?.estimatedWeight && (
-              <View style={styles.detailRow}>
-                <Text style={styles.detailName}>Estimated Weight:</Text>
-                <Text style={styles.detailValue}>
-                  {item?.estimatedWeight} kg
-                </Text>
-              </View>
-            )} */}
+            {item ? (
+              <>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailName}>ID:{item.id}</Text>
+                  {/* <Text style={styles.detailValue}>{item?.id}</Text> */}
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailName}>Name:{item.name}</Text>
+                  {/* <Text style={styles.detailValue}>{item?.name}</Text> */}
+                </View>
+              </>
+            ) : (
+              <>
+                {weightdata.estimated_crate_weight && (
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailName}>
+                      Estimated Weight:{weightdata.estimated_crate_weight}
+                    </Text>
+                    <Text style={styles.detailValue}>
+                      {item?.estimatedWeight} kg
+                    </Text>
+                  </View>
+                )}
+              </>
+            )}
           </View>
         </View>
       </ScrollView>

@@ -1,16 +1,23 @@
 import {colors, fonts} from '@constants';
 import React, {memo} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface IProps {
   title?: string;
   onPress?: () => void;
+  style?: ViewStyle;
 }
 
-const PrimaryHeader = memo(({title, onPress}: IProps) => {
+const PrimaryHeader = memo(({title, onPress, style}: IProps) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <TouchableOpacity onPress={onPress}>
         <MaterialCommunityIcons name="menu" color={colors.white} size={30} />
       </TouchableOpacity>

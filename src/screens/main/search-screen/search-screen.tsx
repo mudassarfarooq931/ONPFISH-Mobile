@@ -15,6 +15,8 @@ import {navigationRef} from '../../../../navigation-helper';
 import {DrawerActions} from '@react-navigation/native';
 import {navigate} from '../../../../root-navigation';
 import {ScreenEnum} from '@constants';
+import {RootState} from '@redux/store';
+import {useSelector} from 'react-redux';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -22,6 +24,24 @@ const SearchScreen = () => {
   const [searchText, setSearchText] = useState('');
   const [viewType, setViewType] = useState<'card' | 'list'>('card');
   const [activeTab, setActiveTab] = useState('All');
+
+  const {totalDataIdentity, totalDataWeight} = useSelector(
+    (state: RootState) => state.weight,
+  );
+
+  const IdentityData = totalDataIdentity.map((identity: any) => {
+    return {
+      id: identity.id,
+      names: identity.names,
+      timestamp: identity.timestamp,
+    };
+  });
+  const weightDataArray = Object.entries(totalDataWeight).map(
+    ([id, data]: any) => ({
+      id, // ID from the key
+      estimatedWeight: data.weightData?.estimated_crate_weight || null, // Weight data
+    }),
+  );
 
   // Random data for the list
   const data = [
@@ -51,28 +71,53 @@ const SearchScreen = () => {
   const onPress = () => {
     navigate(ScreenEnum?.FishDetails);
   };
-  const renderCardView = ({item}: {item: (typeof data)[0]}) => (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
-      <Image source={{uri: item.image}} style={styles.image} />
-      <Text style={styles.cardText}>{item.name}</Text>
-    </TouchableOpacity>
-  );
+  console.log('totalDataWeight', totalDataWeight);
+  console.log('totalDataIdentity', totalDataIdentity);
+  const renderCardView = ({item}: {item: (typeof totalDataIdentity)[0]}) => {
+    return (
+      <View style={styles.card}>
+        <Text style={styles.idText}>ID: {item.id}</Text>
+        {item?.names && (
+          <Text style={styles.namesText}>Names: {item?.names.join(',')}</Text>
+        )}
 
-  const renderListView = ({item}: {item: (typeof data)[0]}) => (
-    <TouchableOpacity style={styles.listItem} onPress={onPress}>
-      <Image source={{uri: item.image}} style={styles.listImage} />
-      <Text style={styles.listText}>{item.name}</Text>
-    </TouchableOpacity>
-  );
+        {item?.estimatedWeight && (
+          <Text style={styles.namesText}>Weight: {item?.estimatedWeight}</Text>
+        )}
+      </View>
+    );
+  };
+  const renderCardView1 = ({item}: {item: (typeof weightDataArray)[0]}) => {
+    return (
+      <View style={styles.card}>
+        <Text style={styles.idText}>ID: {item.id}</Text>
+
+        {item?.estimatedWeight && (
+          <Text style={styles.namesText}>Weight: {item?.estimatedWeight}</Text>
+        )}
+      </View>
+    );
+  };
+
+  // const renderListView = ({item}: {item: (typeof data)[0]}) => (
+  //   <TouchableOpacity style={styles.listItem} onPress={onPress}>
+  //     <Image source={{uri: item.image}} style={styles.listImage} />
+  //     <Text style={styles.listText}>{item.name}</Text>
+  //   </TouchableOpacity>
+  // );
   const openDrawer = () => {
     navigationRef.current.dispatch(DrawerActions.openDrawer());
   };
   return (
     <>
-      <PrimaryHeader title="Search" onPress={openDrawer} />
+      <PrimaryHeader
+        title="Search"
+        onPress={openDrawer}
+        style={{paddingRight: 35}}
+      />
       <View style={styles.container}>
         {/* Search Bar */}
-        <View style={styles.searchBar}>
+        {/* <View style={styles.searchBar}>
           <Icon
             name="search-outline"
             size={20}
@@ -85,31 +130,12 @@ const SearchScreen = () => {
             value={searchText}
             onChangeText={setSearchText}
           />
-        </View>
-
+        </View> */}
         {/* Heading and View Toggle */}
-        <View style={styles.header}>
-          <Text style={styles.heading}>Search Species</Text>
-          <View style={styles.iconButtons}>
-            <TouchableOpacity onPress={() => setViewType('card')}>
-              <Icon
-                name="grid-outline"
-                size={24}
-                color={viewType === 'card' ? 'red' : 'black'}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setViewType('list')}>
-              <Icon
-                name="list-outline"
-                size={24}
-                color={viewType === 'list' ? 'red' : 'black'}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
+        {/* <Text style={styles.heading}>Search Species</Text> */}
+        <Text style={styles.heading}>Names</Text>
         {/* Tabs */}
-        <View style={styles.tabs}>
+        {/* <View style={styles.tabs}>
           {['Local', 'Favorites', 'All'].map(tab => (
             <TouchableOpacity
               key={tab}
@@ -124,15 +150,23 @@ const SearchScreen = () => {
               </Text>
             </TouchableOpacity>
           ))}
-        </View>
-
+        </View> */}
         {/* List */}
         <FlatList
-          data={filteredData}
+          data={IdentityData}
           keyExtractor={item => item.id}
-          renderItem={viewType === 'card' ? renderCardView : renderListView}
-          numColumns={viewType === 'card' ? 2 : 1}
-          key={viewType} // Re-renders FlatList when viewType changes
+          renderItem={renderCardView}
+          numColumns={viewType === 'card' ? 1 : 2}
+          key={'card'} // Re-renders FlatList when viewType changes
+          contentContainerStyle={styles.listContainer}
+        />
+        <Text style={styles.heading2}>Weight Species</Text>
+        <FlatList
+          data={weightDataArray}
+          keyExtractor={item => item.id}
+          renderItem={renderCardView1}
+          numColumns={viewType === 'card' ? 1 : 2}
+          key={'card'} // Re-renders FlatList when viewType changes
           contentContainerStyle={styles.listContainer}
         />
       </View>
@@ -151,20 +185,37 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   icon: {marginRight: 8},
-  input: {flex: 1, fontSize: 16},
+  input: {flex: 1, fontSize: 16, height: 48, borderRadius: 10},
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    //flexDirection: 'row',
+    // justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 10,
     marginTop: 10,
   },
-  heading: {fontSize: 20, fontWeight: 'bold'},
+  heading: {
+    marginTop: 20,
+    fontSize: 20,
+    fontWeight: 'bold',
+
+    marginHorizontal: 20,
+  },
+  heading2: {fontSize: 20, fontWeight: 'bold', marginHorizontal: 20},
   iconButtons: {flexDirection: 'row', gap: 10},
   tabs: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginVertical: 10,
+  },
+  idText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  namesText: {
+    fontSize: 12,
+    textAlign: 'center',
   },
   tab: {
     padding: 10,
@@ -180,7 +231,7 @@ const styles = StyleSheet.create({
     margin: 5,
     backgroundColor: '#f8f8f8',
     borderRadius: 10,
-    overflow: 'hidden',
+    // overflow: 'hidden',
     alignItems: 'center',
   },
   image: {height: 100, width: '100%'},
