@@ -5,6 +5,7 @@ import React, {memo, useEffect} from 'react';
 import {connect} from 'react-redux';
 import BottomTabNav from './bottom-tabs.routes';
 import {FishDetailsScreen, SearchScreen} from '@screens';
+import {ToastView} from '@components';
 
 const mapStateToProps = (state: RootState) => {
   return {};
@@ -17,13 +18,16 @@ const MainNav = memo(() => {
   }, []);
 
   return (
-    <Navigator
-      initialRouteName={'BottomTabNav'}
-      screenOptions={{headerShown: false}}>
-      <Screen name="BottomTabNav" component={BottomTabNav} />
-      <Screen name="FishDetails" component={FishDetailsScreen} />
-      <Screen name="Search" component={SearchScreen} />
-    </Navigator>
+    <>
+      <Navigator
+        initialRouteName={'BottomTabNav'}
+        screenOptions={{headerShown: false}}>
+        <Screen name="BottomTabNav" component={BottomTabNav} />
+        <Screen name="FishDetails" component={FishDetailsScreen} />
+        <Screen name="Search" component={SearchScreen} />
+      </Navigator>
+      <ToastView />
+    </>
   );
 });
 

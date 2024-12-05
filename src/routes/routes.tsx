@@ -11,17 +11,18 @@ import MainDrawerNav from './main/drawer-nav.routes';
 
 interface IProps {
   isLogined: string;
+  toast: string;
 }
 
 const mapStateToProps = (state: RootState) => {
   return {
     isLogined: state.auth.isLogined,
+    toast: state.toast.message,
   };
 };
 
 //-----------------------------------------
-const Routes: React.FC<IProps> = ({isLogined}: IProps) => {
-  console.log(isLogined);
+const Routes: React.FC<IProps> = ({isLogined, toast}: IProps) => {
   useEffect(() => {}, []);
 
   return (
@@ -33,7 +34,7 @@ const Routes: React.FC<IProps> = ({isLogined}: IProps) => {
             navigationRef?.current?.getCurrentRoute()?.name;
           isReadyRef.current = true;
         }}>
-        <ToastView />
+        {toast && <ToastView />}
         <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
         <SafeAreaView style={{backgroundColor: colors.primary}} />
         <SafeAreaView style={{flex: 1, backgroundColor: colors.primary}}>

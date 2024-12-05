@@ -13,6 +13,7 @@ import VersionInfo from 'react-native-version-info';
 import {connect, useDispatch, useSelector} from 'react-redux';
 import {navigate} from '../../../root-navigation';
 import styles from './styles';
+import {clearWeightData} from '@redux/slice/main/dashboard-slice';
 
 //-----------------------------
 interface IDrawerContentProps {
