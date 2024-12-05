@@ -11,7 +11,7 @@ import {
 import ImagePicker from 'react-native-image-crop-picker';
 import {connect, useDispatch, useSelector} from 'react-redux';
 // import Icon from 'react-native-vector-icons/Ionicons';
-import {PrimaryHeader, ProgressDialog} from '@components';
+import {PrimaryHeader, ProgressDialog, ToastView} from '@components';
 import {colors, ScreenEnum} from '@constants';
 import database from '@react-native-firebase/database';
 import {DrawerActions} from '@react-navigation/native';
@@ -28,14 +28,18 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {navigationRef} from '../../../../navigation-helper';
 
 import {navigate} from '../../../../root-navigation';
+import {styles} from './style';
+import {setToastMessage} from '@redux/slice/toast-slice';
 interface IProps {
   userData: any;
+  message: string;
 }
 
 const mapStateToProps = (state: RootState) => {
   return {
     userData: state.auth.userData,
     data: state.weight.data,
+    message: state.toast.message,
   };
 };
 
@@ -55,20 +59,17 @@ const staticData = [
   {id: 9, title: 'Get Help', icon: 'help-circle', screen: 'HelpScreen'},
   {id: 10, title: 'More', icon: 'dots-horizontal', screen: 'MoreScreen'},
 ];
-const DashboardScreen = memo(({userData}: IProps) => {
+const DashboardScreen = memo(({userData, message}: IProps) => {
   const renderItemDashboard = ({item}: {item: (typeof data)[0]}) => (
     <TouchableOpacity
       style={styles.card}
       onPress={() => {
-        console.log('helloo');
         if (item?.title === 'Identify') {
           setModalVisible(true);
         } else if (item?.title === 'Search') {
-          console.log('..hit...');
           navigate(ScreenEnum?.Search);
         } else if (item?.title === 'Weight') {
           setModal(true);
-          console.log('..hit...');
         }
       }}>
       <Icon name={item.icon} size={40} color={colors.primary} />
@@ -85,9 +86,7 @@ const DashboardScreen = memo(({userData}: IProps) => {
   const {data} = useSelector((state: RootState) => state.weight);
 
   useEffect(() => {
-    return () => {
-      dispatch(clearWeightData([]));
-    };
+    return () => {};
   }, []);
 
   const fetchReduxData = () => {
@@ -96,33 +95,27 @@ const DashboardScreen = memo(({userData}: IProps) => {
       .once('value')
       .then(snapshot => {
         const firebaseData = snapshot.val();
-        console.log(firebaseData, 'firebaseData');
 
         const sortedKeys = Object.keys(firebaseData).sort(
           (a, b) =>
             (firebaseData[b].timestamp || 0) - (firebaseData[a].timestamp || 0),
         );
-        console.log(sortedKeys, 'sortedKeys');
 
         const recentId: any = sortedKeys.shift();
-        console.log(recentId, 'recentId');
 
         const recentData = firebaseData[recentId];
 
-        console.log(recentData, 'recentData');
         const listData = recentData.names.map(
           (name: string, index: string) => ({
             id: index.toString(),
             name,
           }),
         );
-        console.log(listData, 'listData');
 
         const names = Object.values(firebaseData)
           .filter((item: any) => item.names && Array.isArray(item.names))
           .flatMap((item: any) => item.names);
 
-        console.log('names', names);
         dispatch(nameData(listData));
 
         if (firebaseData) {
@@ -130,15 +123,9 @@ const DashboardScreen = memo(({userData}: IProps) => {
             id: key,
             ...firebaseData[key],
           }));
-          console.log(alldata, 'alldata');
+
           dispatch(totalDataIdentity(alldata));
         }
-
-        // .catch(err => {
-        //   console.error('Firebase Fetch Error:', err);
-        //   Alert.alert('Error', 'Failed to fetch data from Firebase.');
-        // })
-        // .finally(() => setLoading(false)
       });
   };
 
@@ -146,31 +133,13 @@ const DashboardScreen = memo(({userData}: IProps) => {
     try {
       setLoading(true);
       const identifyResponse = await uploadImageToAPI(imagePath);
-      // const weightResponse = await uploadImageToWeightAPI(imagePath);
-      console.log(identifyResponse, 'identifyResponse');
-      if (
-        identifyResponse.success
-
-        // && weightResponse.success
-      ) {
-        const formattedData = identifyResponse.data.map(
-          fish => fish.name,
-          //   ({
-          //     // ...fish,
-          //     // estimatedWeight: weightResponse.data.estimated_crate_weight, // Attach weight to each item
-          //   }),
-        );
-
-        // const names = data.map(item => item.name);
-        console.log(formattedData, 'formattedData');
-
-        saveToFirebase(
-          formattedData,
-          //  /  weightResponse.data
-        );
+      if (identifyResponse?.data?.length > 0) {
+        const formattedData = identifyResponse.data.map(fish => fish.name);
+        saveToFirebase(formattedData);
         fetchReduxData();
-
-        // dispatch(weightData(formattedData));
+      } else {
+        setModalVisible(false);
+        Alert.alert('No fish identified in the image.');
       }
     } catch (error) {
       console.error('Image Handling Error:', error);
@@ -182,19 +151,14 @@ const DashboardScreen = memo(({userData}: IProps) => {
     try {
       setLoading(true);
       const weightResponse = await uploadImageToWeightAPI(imagePath);
-      console.log('weightResponse', weightResponse);
 
-      if (
-        weightResponse.success
-
-        // && weightResponse.success
-      ) {
+      if (weightResponse?.success) {
         const formattedData = weightResponse.data;
-
-        console.log(formattedData, 'formattedData');
-
         saveToFirebaseWeight(formattedData);
         fetchReduxDataWeight();
+      } else {
+        setModal(false);
+        Alert.alert('No fish Weight Detect in the image.');
       }
     } catch (error) {
       console.error('Image Handling Error:', error);
@@ -208,18 +172,15 @@ const DashboardScreen = memo(({userData}: IProps) => {
       .once('value')
       .then(snapshot => {
         const firebaseData = snapshot.val();
-        console.log(firebaseData, 'firebaseData');
 
         const sortedKeys = Object.keys(firebaseData).sort(
           (a, b) =>
             (firebaseData[b].timestamp || 0) - (firebaseData[a].timestamp || 0),
         );
-        console.log(sortedKeys, 'sortedKeys');
 
         const recentId: any = sortedKeys.shift();
         const recentData = firebaseData[recentId].weightData;
-        console.log(recentData, 'recentData');
-        console.log(recentId, 'recentId');
+
         dispatch(weightData(recentData));
         dispatch(totalDataWeight(firebaseData));
       });
@@ -234,7 +195,6 @@ const DashboardScreen = memo(({userData}: IProps) => {
       .then(image => {
         setSelectedImage(image.path);
         setModalVisible(false);
-
         handleImageSelection(image.path);
       })
       .catch(err => console.error(err));
@@ -247,11 +207,13 @@ const DashboardScreen = memo(({userData}: IProps) => {
       cropping: true,
     })
       .then(image => {
+        setModalVisible(false);
         setSelectedImage(image.path);
-        setModal(false);
         handleImageSelection(image.path);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        setModalVisible(false);
+      });
   };
 
   const openCamera1 = () => {
@@ -261,8 +223,8 @@ const DashboardScreen = memo(({userData}: IProps) => {
       cropping: true,
     })
       .then(image => {
-        setSelectedImage1(image.path);
         setModal(false);
+        setSelectedImage1(image.path);
         handleImageSelection1(image.path);
       })
       .catch(err => console.error(err));
@@ -275,11 +237,14 @@ const DashboardScreen = memo(({userData}: IProps) => {
       cropping: true,
     })
       .then(image => {
-        setSelectedImage1(image.path);
         setModal(false);
+        setSelectedImage1(image.path);
         handleImageSelection1(image.path);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        setModal(false);
+        console.error(err);
+      });
   };
 
   const uploadImageToWeightAPI = async (imagePath: string) => {
@@ -345,16 +310,15 @@ const DashboardScreen = memo(({userData}: IProps) => {
     database()
       .ref(`/fishes/identify/${userData.uid}`)
       .push()
-      .set({names: identifyData, timestamp: Date.now()})
+      .set({names: identifyData, timestamp: Date.now(), isDelete: false})
       .then(() =>
         Alert.alert(
           'Alert',
-          'Success',
+          'Identify Fish Successfully ',
           [
             {
-              text: 'OK',
+              text: 'View',
               onPress: () => {
-                console.log('Alert button pressed');
                 // Add your action here, e.g., navigate to another screen:
                 navigate(ScreenEnum?.Home, 'identity'); // Replace 'Home' with your desired screen
               },
@@ -374,16 +338,15 @@ const DashboardScreen = memo(({userData}: IProps) => {
     database()
       .ref(`/fishes/weight/${userData.uid}`)
       .push()
-      .set({weightData, timestamp: Date.now()})
+      .set({weightData, timestamp: Date.now(), isDelete: false})
       .then(() =>
         Alert.alert(
           'Alert',
-          'Success',
+          'Identify Weight Successfully',
           [
             {
-              text: 'OK',
+              text: 'View',
               onPress: () => {
-                console.log('Alert button pressed');
                 // Add your action here, e.g., navigate to another screen:
                 navigate(ScreenEnum?.Home, 'weight'); // Replace 'Home' with your desired screen
               },
@@ -399,48 +362,12 @@ const DashboardScreen = memo(({userData}: IProps) => {
       });
   };
 
-  const renderItem = ({
-    item,
-  }: {
-    item: {id: string; name: string; estimatedWeight?: number};
-  }) => (
-    <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => navigate(ScreenEnum?.FishDetails, {item})}>
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginRight: 10,
-        }}>
-        <Icon name="fish" color={colors.primary} size={40} />
-      </View>
-      <View style={{flex: 1}}>
-        <Text style={styles.itemText}>ID: {item.id}</Text>
-        <Text style={styles.itemText}>Name: {item.name}</Text>
-        {item.estimatedWeight && (
-          <Text style={styles.itemText}>
-            Estimated Weight: {item.estimatedWeight} kg
-          </Text>
-        )}
-      </View>
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginRight: 10,
-        }}>
-        <Icon name="arrow-forward" color={colors.primary} size={30} />
-      </View>
-    </TouchableOpacity>
-  );
-
   const openDrawer = () => {
     navigationRef.current.dispatch(DrawerActions.openDrawer());
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={styles.container}>
       {loading && <ProgressDialog visible={loading} />}
       <PrimaryHeader
         title="Dashboard"
@@ -448,20 +375,6 @@ const DashboardScreen = memo(({userData}: IProps) => {
         style={{paddingRight: 40}}
       />
 
-      {/* Header */}
-      {/* <View style={styles.header}>
-        <View style={styles.profile}>
-          <View style={styles.profileIcon}>
-            <Text style={styles.profileText}>M</Text>
-          </View>
-          <View>
-            <Text style={styles.welcomeText}>Welcome</Text>
-            <Text style={styles.emailText}>{userData?.email}</Text>
-          </View>
-        </View>
-      </View> */}
-
-      {/* Grid Layout */}
       <FlatList
         data={staticData}
         renderItem={renderItemDashboard}
@@ -508,13 +421,13 @@ const DashboardScreen = memo(({userData}: IProps) => {
             onPress={() => setModalVisible(false)}>
             <View style={styles.modalContent}>
               <TouchableOpacity style={styles.modalButton} onPress={openCamera}>
-                <Icon name="camera" size={24} color={colors.primary} />
+                <Icon name="camera" size={30} color={colors.primary} />
                 <Text style={styles.modalButtonText}>Camera</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={openGallery}>
-                <Icon name="image" size={24} color={colors.primary} />
+                <Icon name="image" size={30} color={colors.primary} />
                 <Text style={styles.modalButtonText}>Gallery</Text>
               </TouchableOpacity>
             </View>
@@ -526,122 +439,3 @@ const DashboardScreen = memo(({userData}: IProps) => {
 });
 
 export default connect(mapStateToProps)(DashboardScreen);
-
-const styles = StyleSheet.create({
-  addButton: {
-    position: 'absolute',
-    bottom: 80,
-    right: 20,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: colors.white,
-    padding: 20,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  modalButton: {
-    alignItems: 'center',
-  },
-  modalButtonText: {
-    fontSize: 14,
-    color: colors.black,
-  },
-  listContent: {
-    paddingBottom: 80,
-    paddingHorizontal: 10,
-    paddingTop: 10,
-  },
-  itemContainer: {
-    padding: 12,
-    backgroundColor: colors.white,
-    borderRadius: 6,
-    marginBottom: 10,
-    flexDirection: 'row',
-    shadowColor: colors.black,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 2,
-  },
-  itemText: {
-    fontSize: 16,
-    color: colors.black,
-  },
-  header: {
-    backgroundColor: colors.primary,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profile: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profileIcon: {
-    backgroundColor: '#FFFFFF',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-  },
-  profileText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FF4500',
-  },
-  welcomeText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-  },
-  emailText: {
-    fontSize: 14,
-    color: '#FFFFFF',
-  },
-  grid: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  card: {
-    flex: 1,
-    margin: 8,
-    backgroundColor: '#F9F9F9',
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-
-    ///////////---shadow---///////////
-    shadowColor: colors.black,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-
-    elevation: 2,
-  },
-  cardTitle: {
-    marginTop: 10,
-    fontSize: 14,
-    color: colors.black,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});

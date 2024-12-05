@@ -4,14 +4,14 @@ import {colors} from '@constants';
 import {CustomHeader} from '@components';
 
 const FishDetailsScreen = ({route}: any) => {
-  const {item, weightdata} = route?.params;
+  // const {item, weightItem, homeRoute, searchRoute, identifyitem, weightdata} =route?.params;
+  const {item, weightdata, isIdentity, identifyitem, weightItem} =
+    route?.params;
 
   return (
     <>
       <CustomHeader title="Fish Details" />
-
       <ScrollView style={styles.container}>
-        {/* Image Section */}
         <View
           style={{
             backgroundColor: colors.white,
@@ -22,38 +22,64 @@ const FishDetailsScreen = ({route}: any) => {
             shadowRadius: 2.62,
             elevation: 2,
           }}>
-          {/* <Image source={{uri: item.image}} style={styles.image} /> */}
+          <View style={styles.image} />
 
-          {/* Details Section */}
           <View style={styles.detailsContainer}>
-            {/* <Text style={styles.titleText}>Fish Details</Text> */}
-
-            {/* Display name and value in one line */}
-            {item ? (
+            {item && isIdentity && (
               <>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailName}>ID:{item.id}</Text>
-                  {/* <Text style={styles.detailValue}>{item?.id}</Text> */}
+                  <>
+                    <Text style={styles.detailName}>ID:{item?.id}</Text>
+                  </>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailName}>Name:{item.name}</Text>
-                  {/* <Text style={styles.detailValue}>{item?.name}</Text> */}
+                  <Text style={styles.detailName}>Name:{item?.name}</Text>
                 </View>
-              </>
-            ) : (
-              <>
-                {weightdata.estimated_crate_weight && (
-                  <View style={styles.detailRow}>
-                    <Text style={styles.detailName}>
-                      Estimated Weight:{weightdata.estimated_crate_weight}
-                    </Text>
-                    <Text style={styles.detailValue}>
-                      {item?.estimatedWeight} kg
-                    </Text>
-                  </View>
-                )}
               </>
             )}
+            {identifyitem && weightItem === undefined && (
+              <>
+                <>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailName}>ID:{identifyitem.id}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailName}>
+                      Name:{identifyitem.names}
+                    </Text>
+                  </View>
+                </>
+              </>
+            )}
+          </View>
+
+          <View style={styles.detailsContainer}>
+            <>
+              {item === null && isIdentity === false && weightdata && (
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailName}>
+                    Estimated Weight:{weightdata?.estimated_crate_weight}
+                  </Text>
+
+                  <Text style={styles.detailValue}>kg</Text>
+                </View>
+              )}
+            </>
+
+            <>
+              {identifyitem === undefined && weightItem && (
+                <>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailName}>ID:{weightItem?.id}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailName}>
+                      Weight:{weightItem?.estimatedWeight}
+                    </Text>
+                  </View>
+                </>
+              )}
+            </>
           </View>
         </View>
       </ScrollView>

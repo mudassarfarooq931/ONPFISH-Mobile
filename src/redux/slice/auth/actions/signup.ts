@@ -13,7 +13,6 @@ export const SignupUser = createAsyncThunk<any, SignupUserPayload>(
         payload?.email,
         payload.password,
       );
-      console.log('Auth response=====>', JSON.stringify(response, null, 2));
 
       const userId = response?.user?.uid;
 
@@ -29,20 +28,16 @@ export const SignupUser = createAsyncThunk<any, SignupUserPayload>(
         userRef.set(obj).then(res => {
           navigate(ScreenEnum?.Login);
         });
-        console.log('userRef====>', JSON.stringify(userRef, null, 2));
       }
 
       if (response) {
-        console.log(true);
       }
       return response;
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
-        console.log('That email address is already in use!');
       }
 
       if (error.code === 'auth/invalid-email') {
-        console.log('That email address is invalid!');
       }
       console.error(error);
       return rejectWithValue(error.message);

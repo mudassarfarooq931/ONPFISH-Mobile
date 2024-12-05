@@ -27,8 +27,7 @@ const mapStateToProps = (state: RootState) => {
 };
 const ProfileScreen = memo(({userData}: IProps) => {
   const {name, email, role, uid} = userData;
-  console.log('UserrData ========>', JSON.stringify(userData, null, 2));
-  // console.log(uid, email, role, fullName);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -41,7 +40,6 @@ const ProfileScreen = memo(({userData}: IProps) => {
 
   const handleLogout = () => {
     dispatch(Logout({undefined}));
-    console.log('Logout button pressed');
   };
 
   return (

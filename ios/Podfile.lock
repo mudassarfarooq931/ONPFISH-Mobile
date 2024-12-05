@@ -1648,8 +1648,8 @@ PODS:
     - Firebase/Auth (<= 11.5.0)
     - React-Core
     - RNFBApp
-  - RNFBDatabase (21.3.0):
-    - Firebase/Database (<= 11.5.0)
+  - RNFBDatabase (21.6.1):
+    - Firebase/Database (= 11.5.0)
     - React-Core
     - RNFBApp
   - RNFBStorage (21.6.1):
@@ -2175,7 +2175,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: 7133577aa318952cac74dae97037a30cd33d73bf
   RNFBApp: a3c9c3b23aa2d77001ce62b5a997325927593c12
   RNFBAuth: 8c355ed0a6b504d11c3573636315ff08746977fc
-  RNFBDatabase: 9d9d3bd7522e5a0bb0372ca98663fd1a51a0f8cf
+  RNFBDatabase: abb0d91778ea1ee81d62d0a2a03fa13f0dbbb1c6
   RNFBStorage: 9c28439fb8d407f188a6a9689184e70af8fa2d74
   RNGestureHandler: 4b397b156d173028ff97960b5ebacfbb21232081
   RNImageCropPicker: a536bb88eade8336e1d18fdeafa77dc893fbc42e
@@ -2190,4 +2190,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 07e1761b55825cbdbfef0c1801aebca59d8ba161
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

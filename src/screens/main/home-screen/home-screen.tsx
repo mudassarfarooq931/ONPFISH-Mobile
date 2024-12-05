@@ -7,15 +7,12 @@ import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {connect, useSelector} from 'react-redux';
 import {navigationRef} from '../../../../navigation-helper';
-import {navigate} from '../../../../root-navigation';
+import {getCurrentRoute, navigate} from '../../../../root-navigation';
 import {weightData} from '@redux/slice/main/dashboard-slice';
 
 interface FishData {
   id: string;
   name: string;
-}
-interface weightdata {
-  weightdata: any;
 }
 
 interface IProps {
@@ -33,18 +30,14 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const HomeScreen = memo(({data, weightdata}: IProps) => {
-  const [searchText, setSearchText] = useState<string>('');
+  const homeRoute = getCurrentRoute()?.name;
+
   const route = useRoute();
-
-  console.log(data, 'usama');
-  console.log(weightdata, 'weightdata');
-
   const renderItem = ({item}: {item: any}) => {
     return <ItemView item={item} isIdentity={true}></ItemView>;
   };
 
   const ItemView = ({item, isIdentity}: {item: any; isIdentity: boolean}) => {
-    console.log('item ', item);
     return (
       <TouchableOpacity
         style={styles.itemContainer}
@@ -52,6 +45,8 @@ const HomeScreen = memo(({data, weightdata}: IProps) => {
           navigate(ScreenEnum?.FishDetails, {
             item,
             weightdata,
+            isIdentity,
+            homeRoute,
           })
         }>
         <View
@@ -62,14 +57,15 @@ const HomeScreen = memo(({data, weightdata}: IProps) => {
           }}>
           <Icon name="fish" color={colors.primary} size={40} />
         </View>
-        <View style={{flex: 1}}>
+        <View
+          style={{
+            flex: 1,
+          }}>
           {isIdentity && <IdentityView item={item} />}
           {!isIdentity && <WeightView />}
         </View>
         <View
           style={{
-            justifyContent: 'center',
-            alignItems: 'center',
             marginRight: 10,
           }}>
           <Icon name="arrow-forward" color={colors.primary} size={30} />
@@ -80,7 +76,7 @@ const HomeScreen = memo(({data, weightdata}: IProps) => {
 
   const WeightView = () => {
     return (
-      <View style={{flex: 1}}>
+      <View style={{flex: 1, justifyContent: 'center'}}>
         <Text style={styles.itemText}>
           Estimated Weight: {weightdata.estimated_crate_weight} kg
         </Text>
@@ -109,17 +105,9 @@ const HomeScreen = memo(({data, weightdata}: IProps) => {
         onPress={openDrawer}
         style={{paddingRight: 40}}
       />
-      <CustomInput
-        placeholder="Search items here"
-        value={searchText}
-        onChangeText={setSearchText}
-      />
+
       {typeof route.params == 'string' && route.params == 'identity' && (
         <FlatList
-          // data={data.filter(
-          //   (item: any) => {},
-          //   //item.name.toLowerCase().includes(searchText.toLowerCase()),
-          // )}
           data={data}
           renderItem={renderItem}
           keyExtractor={item => item.id}
@@ -149,6 +137,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 2,
+    marginHorizontal: 10,
+    marginTop: 10,
   },
   itemText: {
     fontSize: 16,

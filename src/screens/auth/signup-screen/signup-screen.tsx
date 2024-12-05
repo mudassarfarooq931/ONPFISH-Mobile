@@ -58,7 +58,6 @@ const SignupScreen = ({loading}: IProps) => {
       Alert.alert(' Please select your role');
     } else {
       dispatch(SignupUser({fullName, email, password, role}));
-      console.log(fullName, email, password, role);
     }
   };
 

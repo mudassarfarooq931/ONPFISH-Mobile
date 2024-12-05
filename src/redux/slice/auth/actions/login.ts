@@ -28,7 +28,6 @@ export const handleLogin = createAsyncThunk<LoginResponse, LoginPayload>(
 
       if (userData) {
         const {name, uid, role, email} = userData;
-        console.log('User data fetched:', userData);
 
         return {userCredential: response, name, uid, role, email};
       } else {

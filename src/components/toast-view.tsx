@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.yellow_darkest,
+    backgroundColor: colors.primary,
     marginTop: 15,
     zIndex: 99999999,
   },
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primaryDark,
+    backgroundColor: colors.primary,
     zIndex: 99999999,
   },
   darkTextStyle: {
