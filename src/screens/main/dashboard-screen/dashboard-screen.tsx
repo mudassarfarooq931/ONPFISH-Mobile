@@ -257,7 +257,7 @@ const DashboardScreen = memo(({userData, message}: IProps) => {
       });
 
       const response = await axios.post(
-        'https://7727771d44d4.ngrok.app/weight/',
+        'https://fish.ngrok.app/weight/',
         formData,
         {
           headers: {
@@ -283,7 +283,7 @@ const DashboardScreen = memo(({userData, message}: IProps) => {
       });
 
       const response = await axios.post(
-        'https://7727771d44d4.ngrok.app/identify/',
+        'https://fish.ngrok.app/identify/',
         formData,
         {
           headers: {
